@@ -3,9 +3,6 @@
 import argparse
 from datetime import datetime, timedelta
 import sys
-from astropy.coordinates import EarthLocation, get_body, AltAz
-import astropy.units as u
-from astropy.time import Time
 
 # Local libraries
 import astro_now as anow
@@ -44,15 +41,7 @@ def main(args):
 
 	myTZM = anow.CTimeZoneManager()
 
-	myTimeZone = myTZM.GetTimeZoneObject(myCoordinates["Latitude"], myCoordinates["Longitude"])
-
-	loc = EarthLocation(lat=myCoordinates["Latitude"]*u.deg, lon=myCoordinates["Longitude"]*u.deg, height=390*u.m)
-
-	naive_local = myTZM.GetDateTimeFromString(observerDateTime)
-	localized_local = myTZM.GetLocalizedTime(naive_local, myTimeZone)
-	utc_offset = myTZM.GetUTCOffsetHours(localized_local)*u.hour
-
-	observerUTCDateTime = Time(observerDateTime, scale='utc', location=loc) - utc_offset
+	observerUTCDateTime = myTZM.GetUTCFromLocalWithCoordinates(myCoordinates["Latitude"], myCoordinates["Longitude"], observerDateTime)
 
 	myAstro = anow.CAstroNow(observerLatitude=myCoordinates["Latitude"], observerLongitude=myCoordinates["Longitude"], observerUTCDateTime=observerUTCDateTime)
 

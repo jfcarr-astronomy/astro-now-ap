@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta
 import pytz
 import timezonefinder
+from astropy.coordinates import EarthLocation, get_body, AltAz
+import astropy.units as u
+from astropy.time import Time
 
 class CAstroNow(object):
 	def __init__(self, observerLatitude, observerLongitude, observerUTCDateTime):
@@ -69,7 +72,23 @@ class CTimeZoneManager(object):
 		input_local = local_timezone.localize(localDateTime, is_dst=None)
 		output_utc = input_local.astimezone(pytz.utc)
 
-		return output_utc		
+		return output_utc
+
+	def GetUTCFromLocalWithCoordinates(self, observerLatitude, observerLongitude, localTime):
+		'''
+		Given the local observer's latitude, longitude, and datetime, return the local observer's UTC datetime.
+		'''
+		myTimeZone = self.GetTimeZoneObject(observerLatitude, observerLongitude)
+
+		loc = EarthLocation(lat=observerLatitude*u.deg, lon=observerLongitude*u.deg, height=390*u.m)
+
+		naive_local = self.GetDateTimeFromString(localTime)
+		localized_local = self.GetLocalizedTime(naive_local, myTimeZone)
+		utc_offset = self.GetUTCOffsetHours(localized_local)*u.hour
+
+		observerUTCDateTime = Time(localTime, scale='utc', location=loc) - utc_offset
+
+		return observerUTCDateTime
 
 	def GetUTCOffsetHours(self, localDateTime):
 		return localDateTime.utcoffset().total_seconds()/3600
