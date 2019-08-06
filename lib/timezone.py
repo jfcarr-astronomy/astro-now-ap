@@ -5,16 +5,6 @@ from astropy.coordinates import EarthLocation, get_body, AltAz
 import astropy.units as u
 from astropy.time import Time
 
-class CAstroNow(object):
-	def __init__(self, observerLatitude, observerLongitude, observerUTCDateTime):
-		self.observerLatitude = observerLatitude
-		self.observerLongitude = observerLongitude
-		self.observerUTCDateTime = observerUTCDateTime
-
-	def DumpDebug(self):
-		print("Observer Latitude and Longitude is {latitude} and {longitude}".format(latitude=self.observerLatitude,longitude=self.observerLongitude))
-		print("Observer UTC date and time is {observerUTCDateTime}".format(observerUTCDateTime=self.observerUTCDateTime))
-
 class CTimeZoneManager(object):
 	'''
 	Time zone operations.

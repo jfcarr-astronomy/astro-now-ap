@@ -5,8 +5,9 @@ from datetime import datetime, timedelta
 import sys
 
 # Local libraries
-import astro_now as anow
-import geocode as GC
+import lib.astro_now as AstroNow
+import lib.geocode as GeoCode
+import lib.timezone as TimeZone
 
 def main(args):
 	parser = argparse.ArgumentParser()
@@ -21,7 +22,7 @@ def main(args):
 		sys.exit(1)
 
 	if args.location:
-		myGeocoder = GC.CGeocode()
+		myGeocoder = GeoCode.CGeocode()
 		myCoordinates = myGeocoder.GetCoordinatesForCity(args.location)
 		if myCoordinates['Latitude'] == None:
 			print("Geocoder is unavailable.")
@@ -39,11 +40,11 @@ def main(args):
 	else:
 		observerDateTime = datetime.now().strftime('%Y-%m-%d %H:%M')
 
-	myTZM = anow.CTimeZoneManager()
+	myTZM = TimeZone.CTimeZoneManager()
 
 	observerUTCDateTime = myTZM.GetUTCFromLocalWithCoordinates(myCoordinates["Latitude"], myCoordinates["Longitude"], observerDateTime)
 
-	myAstro = anow.CAstroNow(observerLatitude=myCoordinates["Latitude"], observerLongitude=myCoordinates["Longitude"], observerUTCDateTime=observerUTCDateTime)
+	myAstro = AstroNow.CAstroNow(observerLatitude=myCoordinates["Latitude"], observerLongitude=myCoordinates["Longitude"], observerUTCDateTime=observerUTCDateTime)
 
 	myAstro.DumpDebug()
 
